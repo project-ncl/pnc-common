@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Map;
 
 import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
@@ -276,8 +277,8 @@ public class PNCHttpClientTest {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TestConfig implements PNCHttpClientConfig {
-        long connectTimeout = 2000;
-        long requestTimeout = 60000;
+        Duration connectTimeout = Duration.ofSeconds(2);
+        Duration requestTimeout = Duration.ofSeconds(60);
         boolean forceHTTP11 = false;
         RetryConfig retryConfig = new TestRetryConfig();
 
@@ -287,12 +288,12 @@ public class PNCHttpClientTest {
         }
 
         @Override
-        public long connectTimeout() {
+        public Duration connectTimeout() {
             return connectTimeout;
         }
 
         @Override
-        public long requestTimeout() {
+        public Duration requestTimeout() {
             return requestTimeout;
         }
 
@@ -305,18 +306,18 @@ public class PNCHttpClientTest {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TestRetryConfig implements PNCHttpClientConfig.RetryConfig {
-        int backoffInitialDelay = 1;
-        int backoffMaxDelay = 2;
+        Duration backoffInitialDelay = Duration.ofSeconds(1);
+        Duration backoffMaxDelay = Duration.ofSeconds(2);
         int maxRetries = MAX_RETRIES;
-        int maxDuration = 20;
+        Duration maxDuration = Duration.ofSeconds(20);
 
         @Override
-        public int backoffInitialDelay() {
+        public Duration backoffInitialDelay() {
             return backoffInitialDelay;
         }
 
         @Override
-        public int backoffMaxDelay() {
+        public Duration backoffMaxDelay() {
             return backoffMaxDelay;
         }
 
@@ -326,7 +327,7 @@ public class PNCHttpClientTest {
         }
 
         @Override
-        public int maxDuration() {
+        public Duration maxDuration() {
             return maxDuration;
         }
     }

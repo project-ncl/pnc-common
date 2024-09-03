@@ -17,49 +17,62 @@
  */
 package org.jboss.pnc.common.http;
 
+import io.smallrye.config.WithDefault;
+
+import java.time.Duration;
+
 public interface PNCHttpClientConfig {
     RetryConfig retryConfig();
 
     /**
-     * The connect timeout (in milliseconds). In the case where a new connection needs to be established, if the
-     * connection cannot be established within the given duration, it will fail.
+     * The connect timeout. In the case where a new connection needs to be established, if the connection cannot be
+     * established within the given duration, it will fail. Defaults to 30 seconds.
      */
-    long connectTimeout();
+    @WithDefault("PT30s")
+    Duration connectTimeout();
 
     /**
-     * A timeout for requests (in milliseconds). If the response is not received within the specified timeout then the
-     * request will fail.
+     * A timeout for requests. If the response is not received within the specified timeout then the request will fail.
+     * Defaults to 5 minutes.
      */
-    long requestTimeout();
+    @WithDefault("PT5m")
+    Duration requestTimeout();
 
     /**
-     * If enabled, will set the client to use only HTTP version 1.1.
+     * If enabled, will set the client to use only HTTP version 1.1. Defaults to false.
      */
+    @WithDefault("false")
     boolean forceHTTP11();
 
     interface RetryConfig {
         /**
-         * The initial delay between retries (in seconds), exponentially backing off to the maxDelay and multiplying
-         * consecutive delays by a factor of 2.
+         * The initial delay between retries, exponentially backing off to the maxDelay and multiplying consecutive
+         * delays by a factor of 2. Defaults to 1 second.
          */
-        int backoffInitialDelay();
+        @WithDefault("PT1s")
+        Duration backoffInitialDelay();
 
         /**
-         * The max delay between retries (in seconds), exponentially backing off from the initial delay and multiplying
-         * consecutive delays by a factor of 2.
+         * The max delay between retries, exponentially backing off from the initial delay and multiplying consecutive
+         * delays by a factor of 2. Defaults to 1 minute.
          */
-        int backoffMaxDelay();
+        @WithDefault("PT60s")
+        Duration backoffMaxDelay();
 
         /**
-         * The max number of retries to perform when an execution attempt fails. -1 indicates no limit.
+         * The max number of retries to perform when an execution attempt fails. -1 indicates no limit. Defaults to -1
+         * (no limit, will be limited by {@link RetryConfig#maxDuration()}).
          */
+        @WithDefault("-1")
         int maxRetries();
 
         /**
-         * The max duration (in seconds) to perform retries for, else the execution will be failed. This setting will
-         * not disable max retries. A max retries limit can be disabled via maxRetries = -1.
+         * The max duration to perform retries for, else the execution will be failed. This setting will not disable max
+         * retries. A max retries limit can be disabled via {@link RetryConfig#maxRetries()} = -1. Defaults to 20
+         * minutes.
          */
-        int maxDuration();
+        @WithDefault("PT20m")
+        Duration maxDuration();
     }
 
 }

@@ -31,7 +31,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -44,7 +43,7 @@ import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
 public class PNCHttpClient {
     private final HttpClient client;
     private final ObjectMapper objectMapper;
-    private final long requestTimeout;
+    private final Duration requestTimeout;
     private final RetryPolicy<HttpResponse<String>> retryPolicy;
     /**
      * Supplier of authentication token to be used with every request. When set, will set the
@@ -64,7 +63,7 @@ public class PNCHttpClient {
 
     public PNCHttpClient(ObjectMapper objectMapper, PNCHttpClientConfig config) {
         HttpClient.Builder builder = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofMillis(config.connectTimeout()))
+                .connectTimeout(config.connectTimeout())
                 .followRedirects(HttpClient.Redirect.NORMAL);
         if (config.forceHTTP11()) {
             builder.version(HttpClient.Version.HTTP_1_1);
@@ -75,10 +74,10 @@ public class PNCHttpClient {
 
         PNCHttpClientConfig.RetryConfig retryConfig = config.retryConfig();
         retryPolicy = RetryPolicy.<HttpResponse<String>> builder()
-                .withBackoff(retryConfig.backoffInitialDelay(), retryConfig.backoffMaxDelay(), ChronoUnit.SECONDS)
+                .withBackoff(retryConfig.backoffInitialDelay(), retryConfig.backoffMaxDelay())
                 .withMaxRetries(retryConfig.maxRetries())
                 .abortOn(this::abortOn)
-                .withMaxDuration(Duration.of(retryConfig.maxDuration(), ChronoUnit.SECONDS))
+                .withMaxDuration(retryConfig.maxDuration())
                 .onSuccess(e -> log.debug("Request successfully sent, response: {}", e.getResult().statusCode()))
                 .onRetry(
                         e -> log.debug(
@@ -166,7 +165,7 @@ public class PNCHttpClient {
     private HttpRequest prepareHttpRequest(Request request, Object payload) {
         log.debug("Performing HTTP request with these parameters: {}", request);
         HttpRequest.Builder builder = HttpRequest.newBuilder(request.getUri());
-        builder.timeout(Duration.ofMillis(requestTimeout));
+        builder.timeout(requestTimeout);
 
         HttpRequest.BodyPublisher bp;
         if (payload == null) {
