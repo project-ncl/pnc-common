@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jboss.pnc.api.dto.Request;
 import org.jboss.pnc.common.Json;
 
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -35,6 +36,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
+import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 
 /**
  * Wrapper around {@link HttpClient} that can handle PNC {@link Request}s.
@@ -167,38 +169,17 @@ public class PNCHttpClient {
         HttpRequest.Builder builder = HttpRequest.newBuilder(request.getUri());
         builder.timeout(requestTimeout);
 
-        HttpRequest.BodyPublisher bp;
-        if (payload == null) {
-            bp = HttpRequest.BodyPublishers.noBody();
-        } else {
-            try {
-                bp = HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(payload));
-            } catch (JsonProcessingException e) {
-                throw new PNCHttpClientException("Failure to parse payload object to JSON", e);
-            }
-        }
-
         switch (request.getMethod()) {
-            case GET:
-                builder.GET();
-                break;
             case POST:
-                builder.POST(bp);
-                break;
+            case PATCH:
             case PUT:
-                builder.PUT(bp);
+                setMethodWithBody(builder, request.getMethod(), payload);
                 break;
             case DELETE:
-                builder.DELETE();
-                break;
+            case GET:
             case HEAD:
-                builder.method("HEAD", bp);
-                break;
-            case PATCH:
-                builder.method("PATCH", bp);
-                break;
             case OPTIONS:
-                builder.method("OPTIONS", bp);
+                builder.method(request.getMethod().name(), HttpRequest.BodyPublishers.noBody());
                 break;
             default:
                 throw new UnsupportedOperationException("Cannot send " + request.getMethod() + " request.");
@@ -209,5 +190,22 @@ public class PNCHttpClient {
             builder.setHeader(AUTHORIZATION_STRING, "Bearer " + tokenSupplier.get());
         }
         return builder.build();
+    }
+
+    private void setMethodWithBody(HttpRequest.Builder builder, Request.Method method, Object payload) {
+        HttpRequest.BodyPublisher bp;
+
+        if (payload == null) {
+            bp = HttpRequest.BodyPublishers.noBody();
+        } else {
+            try {
+                bp = HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(payload));
+                builder.header(CONTENT_TYPE_STRING, MediaType.APPLICATION_JSON);
+            } catch (JsonProcessingException e) {
+                throw new PNCHttpClientException("Failure to parse payload object to JSON", e);
+            }
+        }
+
+        builder.method(method.name(), bp);
     }
 }

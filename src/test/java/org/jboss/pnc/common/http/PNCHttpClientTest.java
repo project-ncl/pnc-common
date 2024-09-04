@@ -29,12 +29,14 @@ import org.jboss.pnc.api.dto.Request;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Map;
 
 import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
+import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 
 @WireMockTest
 public class PNCHttpClientTest {
@@ -74,6 +76,7 @@ public class PNCHttpClientTest {
         WireMock.verify(
                 2,
                 WireMock.postRequestedFor(WireMock.urlEqualTo(ENDPOINT))
+                        .withHeader(CONTENT_TYPE_STRING, WireMock.equalTo(MediaType.APPLICATION_JSON))
                         .withHeader(HEADER_NAME, WireMock.equalTo(HEADER_VALUE))
                         .withRequestBody(WireMock.equalToJson(PAYLOAD_JSON)));
     }
@@ -101,6 +104,32 @@ public class PNCHttpClientTest {
                 4,
                 WireMock.getRequestedFor(WireMock.urlEqualTo(ENDPOINT))
                         .withHeader(HEADER_NAME, WireMock.equalTo(HEADER_VALUE))
+                        .withoutHeader(CONTENT_TYPE_STRING)
+                        .withRequestBody(WireMock.absent()));
+    }
+
+    @Test
+    public void sendRequest_postWithoutBody_hasNoContentTypeHeader() {
+        WireMock.stubFor(WireMock.post(ENDPOINT).willReturn(WireMock.ok()));
+        PNCHttpClient client = new PNCHttpClient(CONFIG);
+
+        Request request = Request.builder()
+                .uri(wiremockURI.resolve(ENDPOINT))
+                .attachment(null)
+                .method(Request.Method.POST)
+                .header(HEADER_NAME, HEADER_VALUE)
+                .build();
+
+        client.trySendRequest(request);
+        client.sendRequest(request);
+        client.trySendRequest(request, null);
+        client.sendRequest(request, null);
+
+        WireMock.verify(
+                4,
+                WireMock.postRequestedFor(WireMock.urlEqualTo(ENDPOINT))
+                        .withHeader(HEADER_NAME, WireMock.equalTo(HEADER_VALUE))
+                        .withoutHeader(CONTENT_TYPE_STRING)
                         .withRequestBody(WireMock.absent()));
     }
 
