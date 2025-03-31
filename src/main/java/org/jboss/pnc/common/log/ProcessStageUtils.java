@@ -65,6 +65,15 @@ public class ProcessStageUtils {
 
     }
 
+    /**
+     * Prints the beginning of the process stage, and returns auto-closeable which will print the end of the process
+     * stage when it is closed.
+     */
+    public static AutoCloseable startCloseableStage(String processStage) {
+        logProcessStageBegin(processStage);
+        return () -> logProcessStageEnd(processStage);
+    }
+
     public enum Step {
         BEGIN, END
     }
