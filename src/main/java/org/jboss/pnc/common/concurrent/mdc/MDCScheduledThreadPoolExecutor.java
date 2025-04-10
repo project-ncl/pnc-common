@@ -31,35 +31,40 @@ import java.util.concurrent.TimeUnit;
  */
 public class MDCScheduledThreadPoolExecutor extends MDCThreadPoolExecutor implements ScheduledExecutorService {
 
-    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    ScheduledExecutorService scheduledExecutor;
+
+    public MDCScheduledThreadPoolExecutor(ScheduledExecutorService scheduledExecutor) {
+        this.scheduledExecutor = scheduledExecutor;
+        super.executorService = Context.taskWrapping(scheduledExecutor);
+    }
 
     public MDCScheduledThreadPoolExecutor(int corePoolSize, ThreadFactory threadFactory) {
-        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
-        super.executorService = Context.taskWrapping(scheduledThreadPoolExecutor);
+        scheduledExecutor = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
+        super.executorService = Context.taskWrapping(scheduledExecutor);
     }
 
     public MDCScheduledThreadPoolExecutor(int corePoolSize) {
-        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(corePoolSize);
-        super.executorService = Context.taskWrapping(scheduledThreadPoolExecutor);
+        scheduledExecutor = new ScheduledThreadPoolExecutor(corePoolSize);
+        super.executorService = Context.taskWrapping(scheduledExecutor);
     }
 
     @Override
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-        return scheduledThreadPoolExecutor.schedule(MDCWrappers.wrap(command), delay, unit);
+        return scheduledExecutor.schedule(MDCWrappers.wrap(command), delay, unit);
     }
 
     @Override
     public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-        return scheduledThreadPoolExecutor.schedule(MDCWrappers.wrap(callable), delay, unit);
+        return scheduledExecutor.schedule(MDCWrappers.wrap(callable), delay, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-        return scheduledThreadPoolExecutor.scheduleAtFixedRate(MDCWrappers.wrap(command), initialDelay, period, unit);
+        return scheduledExecutor.scheduleAtFixedRate(MDCWrappers.wrap(command), initialDelay, period, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-        return scheduledThreadPoolExecutor.scheduleWithFixedDelay(MDCWrappers.wrap(command), initialDelay, delay, unit);
+        return scheduledExecutor.scheduleWithFixedDelay(MDCWrappers.wrap(command), initialDelay, delay, unit);
     }
 }
