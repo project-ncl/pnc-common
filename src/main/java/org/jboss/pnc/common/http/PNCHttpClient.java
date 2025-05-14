@@ -150,6 +150,7 @@ public class PNCHttpClient {
         log.debug("Sending the request {}", httpRequest);
         try {
             HttpResponse<Void> response = client.send(httpRequest, HttpResponse.BodyHandlers.discarding());
+            log.debug("Response status code is: {}", response.statusCode());
             if (response.statusCode() >= 300) {
                 throw new PNCHttpClientException(
                         "Sending request to " + httpRequest.method() + " " + httpRequest.uri() + " failed with status: "
