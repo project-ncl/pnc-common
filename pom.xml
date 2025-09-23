@@ -10,7 +10,7 @@
 
     <groupId>org.jboss.pnc</groupId>
     <artifactId>pnc-common</artifactId>
-    <version>3.2.3-SNAPSHOT</version>
+    <version>3.3.0-SNAPSHOT</version>
     <name>pnc-common</name>
 
     <licenses>
