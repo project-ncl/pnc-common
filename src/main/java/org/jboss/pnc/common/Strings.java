@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -47,6 +48,82 @@ public class Strings {
             throw new RuntimeException("Invalid key:value string: [" + string + "]", e);
         }
         return map;
+    }
+
+    /**
+     * Parse comma separated string to Integer array.
+     *
+     * @return An empty array when the string parameter is empty or null.
+     */
+    public static Integer[] deserializeInt(String string) {
+        if (string == null) {
+            return new Integer[0];
+        }
+        return Arrays.stream(string.split(","))
+                .filter(s -> !s.equals(""))
+                .map(Integer::parseInt)
+                .toArray(Integer[]::new);
+    }
+
+    /**
+     * Parse comma separated string to Long array.
+     *
+     * @return An empty array when the string parameter is empty or null.
+     */
+    public static Long[] deserializeLong(String string) {
+        if (string == null) {
+            return new Long[0];
+        }
+        return Arrays.stream(string.split(",")).filter(s -> !s.equals("")).map(Long::parseLong).toArray(Long[]::new);
+    }
+
+    /**
+     * Serialize Integer array to comma separated string.
+     *
+     * @return An empty string when the Integer array parameter is empty or null.
+     */
+    public static String serializeInt(Integer[] integers) {
+        if (integers == null) {
+            return "";
+        }
+        return Arrays.stream(integers).map(i -> Integer.toString(i)).collect(Collectors.joining(","));
+    }
+
+    public static String serializeLong(Long[] longs) {
+        if (longs == null) {
+            return "";
+        }
+        return Arrays.stream(longs).map(i -> Long.toString(i)).collect(Collectors.joining(","));
+    }
+
+    public static String stripSuffix(String string, String suffix) {
+        if (string == null) {
+            return null;
+        }
+        if (suffix == null) {
+            return string;
+        }
+
+        if (string.endsWith(suffix)) {
+            return string.substring(0, string.length() - suffix.length());
+        } else {
+            return string;
+        }
+    }
+
+    public static String stripProtocol(String url) {
+        if (url == null) {
+            return null;
+        }
+
+        String protocolDivider = "://";
+        int protocolDividerIndex = url.indexOf(protocolDivider);
+
+        if (protocolDividerIndex > -1) {
+            return url.substring(protocolDividerIndex + protocolDivider.length());
+        } else {
+            return url;
+        }
     }
 
     /**
@@ -110,6 +187,13 @@ public class Strings {
         } else {
             return defaultValue;
         }
+    }
+
+    public static String nullIfBlank(String string) {
+        if (string == null || string.trim().isEmpty()) {
+            return null;
+        }
+        return string;
     }
 
     public static String fistCharToLower(String string) {
