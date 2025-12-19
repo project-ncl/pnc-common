@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -144,6 +145,49 @@ public class PNCHttpClient {
     public void sendRequest(Request request, Object payload) {
         HttpRequest httpRequest = prepareHttpRequest(request, payload);
         Failsafe.with(retryPolicy).run(() -> doSendRequest(httpRequest));
+    }
+
+    /**
+     * Sends the request and returns the full HTTP response (status, headers, body). Retries according to the configured
+     * retry policy.
+     */
+    public HttpResponse<String> sendRequestForResponse(Request request) {
+        return sendRequestForResponse(request, request.getAttachment());
+    }
+
+    public HttpResponse<String> sendRequestForResponse(Request request, Object payload) {
+        HttpRequest httpRequest = prepareHttpRequest(request, payload);
+        return Failsafe.with(retryPolicy).get(() -> doSendRequestForResponse(httpRequest));
+    }
+
+    private HttpResponse<String> doSendRequestForResponse(HttpRequest httpRequest) {
+        log.debug("Sending the request {}", httpRequest);
+        try {
+            HttpResponse<String> response = client
+                    .send(httpRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            log.debug("Response status code is: {}", response.statusCode());
+
+            if (response.statusCode() >= 300) {
+                // Include a small snippet of the body to aid debugging
+                String body = response.body();
+                String snippet = body == null ? "" : (body.length() > 500 ? body.substring(0, 500) + "..." : body);
+
+                throw new PNCHttpClientException(
+                        "Sending request to " + httpRequest.method() + " " + httpRequest.uri() + " failed with status: "
+                                + response.statusCode() + (snippet.isEmpty() ? "" : ", body: " + snippet),
+                        response.statusCode());
+            }
+
+            return response;
+        } catch (IOException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            throw new PNCHttpClientException(
+                    "Sending request to " + httpRequest.method() + " " + httpRequest.uri() + " failed with error: "
+                            + e.getMessage(),
+                    e);
+        }
     }
 
     private void doSendRequest(HttpRequest httpRequest) {

@@ -9,11 +9,13 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
 import org.jboss.pnc.api.dto.Request;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -25,6 +27,7 @@ import org.jboss.pnc.common.Json;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -33,6 +36,51 @@ import java.util.Optional;
 @Slf4j
 public class HttpUtils {
     private static final ObjectMapper objectMapper = Json.newObjectMapper();
+
+    public static String performHttpGetRequest(String uri, Optional<String> authHttpValue) {
+        return performHttpGetRequest(URI.create(uri), authHttpValue);
+    }
+
+    public static String performHttpGetRequest(URI uri, Optional<String> authHttpValue) {
+        log.debug("Sending HTTP GET request to {}", uri);
+
+        HttpGet request = new HttpGet(uri);
+        request.setHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+        authHttpValue.ifPresent(s -> request.setHeader(HttpHeaders.AUTHORIZATION, s));
+
+        return performHttpGetRequest(uri, request);
+    }
+
+    private static String performHttpGetRequest(URI uri, HttpUriRequest httpRequest) {
+        try (CloseableHttpClient httpClient = HttpUtils.getPermissiveHttpClient();
+                CloseableHttpResponse response = httpClient.execute(httpRequest)) {
+
+            int status = response.getStatusLine().getStatusCode();
+            String body = response.getEntity() != null
+                    ? EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8)
+                    : "";
+
+            if (isSuccess(status)) {
+                log.debug("HTTP {} request to {} succeeded. Status: {}", httpRequest.getMethod(), uri, status);
+                return body;
+            }
+
+            // include body to help debugging
+            String msg = String.format(
+                    "HTTP %s request to %s failed. Status: %d, Body: %s",
+                    httpRequest.getMethod(),
+                    uri,
+                    status,
+                    body);
+            log.warn(msg);
+            throw new RuntimeException(msg);
+
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Error occurred executing HTTP request " + httpRequest.getMethod() + " to " + uri,
+                    e);
+        }
+    }
 
     public static void performHttpPostRequest(String uri, String jsonPayload, String authHttpValue)
             throws JsonProcessingException {

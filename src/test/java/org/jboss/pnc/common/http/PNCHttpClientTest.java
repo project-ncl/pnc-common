@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
 
@@ -303,6 +304,33 @@ public class PNCHttpClientTest {
                         .withRequestBody(WireMock.equalToJson(PAYLOAD_JSON)));
     }
 
+    @Test
+    public void sendRequestForResponse_get_returnsBodyAndHeaders() {
+        String body = "{\"version\":\"1.2.3\"}";
+
+        WireMock.stubFor(WireMock.get(ENDPOINT).willReturn(WireMock.okJson(body).withHeader("X-Test", "yes")));
+
+        PNCHttpClient client = new PNCHttpClient(CONFIG);
+
+        Request request = Request.builder()
+                .uri(wiremockURI.resolve(ENDPOINT))
+                .method(Request.Method.GET)
+                .header(HEADER_NAME, HEADER_VALUE)
+                .build();
+
+        HttpResponse<String> response = client.sendRequestForResponse(request);
+
+        Assertions.assertThat(response.statusCode()).isEqualTo(200);
+        Assertions.assertThat(response.body()).isEqualTo(body);
+        Assertions.assertThat(response.headers().firstValue("X-Test")).contains("yes");
+
+        WireMock.verify(
+                1,
+                WireMock.getRequestedFor(WireMock.urlEqualTo(ENDPOINT))
+                        .withHeader(HEADER_NAME, WireMock.equalTo(HEADER_VALUE))
+                        .withRequestBody(WireMock.absent()));
+    }
+
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TestConfig implements PNCHttpClientConfig {
@@ -360,4 +388,5 @@ public class PNCHttpClientTest {
             return maxDuration;
         }
     }
+
 }
