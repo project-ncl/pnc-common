@@ -3,6 +3,7 @@ package org.jboss.pnc.common.alignment.ranking.compiler;
 import org.jboss.pnc.api.dependencyanalyzer.dto.QualifiedVersion;
 import org.jboss.pnc.common.alignment.ranking.parser.BinaryNode;
 import org.jboss.pnc.common.alignment.ranking.parser.LeafNode;
+import org.jboss.pnc.common.alignment.ranking.tokenizer.TokenType;
 
 import java.util.function.Predicate;
 
@@ -10,7 +11,7 @@ public class PredicateCompiler extends AbstractCompiler<Predicate<QualifiedVersi
         implements Compiler<Predicate<QualifiedVersion>> {
 
     @Override
-    protected Predicate<QualifiedVersion> handleBinaryNode(BinaryNode bNode) {
+    protected Predicate<QualifiedVersion> handleBinaryNode(BinaryNode bNode, TokenType type) {
         switch (bNode.getToken().tokenType) {
             case COMMA:
             case LOGIC: {
@@ -23,7 +24,7 @@ public class PredicateCompiler extends AbstractCompiler<Predicate<QualifiedVersi
     }
 
     @Override
-    protected Predicate<QualifiedVersion> handleLeafNode(LeafNode lNode) {
+    protected Predicate<QualifiedVersion> handleLeafNode(LeafNode lNode, TokenType type) {
         switch (lNode.getToken().tokenType) {
             case QVALUE:
                 return (ver) -> match(lNode, ver);
