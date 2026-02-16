@@ -50,10 +50,10 @@ public class DefaultParser implements Parser {
                     ALLOWED_NEXT_TOKENS.get(RPAREN).add(null);
                     break;
                 case COMMA:
-                    ALLOWED_NEXT_TOKENS.get(COMMA).addAll(Set.of(QVALUE, LPAREN));
+                    ALLOWED_NEXT_TOKENS.get(RPAREN).addAll(Set.of(QVALUE, LPAREN));
                     break;
                 case SORT_BY:
-                    ALLOWED_NEXT_TOKENS.get(SORT_BY).add(ORDER);
+                    ALLOWED_NEXT_TOKENS.get(RPAREN).add(ORDER);
                     break;
             }
         }

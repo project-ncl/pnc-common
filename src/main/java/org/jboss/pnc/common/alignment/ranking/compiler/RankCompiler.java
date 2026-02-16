@@ -8,6 +8,7 @@ import org.jboss.pnc.common.alignment.ranking.parser.BinaryNode;
 import org.jboss.pnc.common.alignment.ranking.parser.LeafNode;
 import org.jboss.pnc.common.alignment.ranking.parser.Node;
 import org.jboss.pnc.common.alignment.ranking.tokenizer.OrderToken;
+import org.jboss.pnc.common.alignment.ranking.tokenizer.TokenType;
 
 import java.util.Comparator;
 
@@ -20,8 +21,8 @@ public class RankCompiler extends AbstractCompiler<Comparator<QualifiedVersion>>
     private Comparator<String> suffixVersionComparator = Comparator.naturalOrder();
 
     @Override
-    protected Comparator<QualifiedVersion> handleBinaryNode(BinaryNode bNode) {
-        switch (bNode.getToken().tokenType) {
+    protected Comparator<QualifiedVersion> handleBinaryNode(BinaryNode bNode, TokenType type) {
+        switch (type) {
             case LOGIC: {
                 return (ver1, ver2) -> evaluateTree(bNode, ver1, ver2);
             }
@@ -48,8 +49,8 @@ public class RankCompiler extends AbstractCompiler<Comparator<QualifiedVersion>>
     }
 
     @Override
-    protected Comparator<QualifiedVersion> handleLeafNode(LeafNode lNode) {
-        switch (lNode.getToken().tokenType) {
+    protected Comparator<QualifiedVersion> handleLeafNode(LeafNode lNode, TokenType type) {
+        switch (type) {
             case QVALUE:
                 return (ver1, ver2) -> evaluateTree(lNode, ver1, ver2);
             case ORDER:

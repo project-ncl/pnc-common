@@ -14,9 +14,9 @@ import static java.text.MessageFormat.format;
 
 public abstract class AbstractCompiler<T> implements Compiler<T> {
 
-    protected abstract T handleBinaryNode(BinaryNode bNode);
+    protected abstract T handleBinaryNode(BinaryNode bNode, TokenType type);
 
-    protected abstract T handleLeafNode(LeafNode lNode);
+    protected abstract T handleLeafNode(LeafNode bNode, TokenType type);
 
     @Override
     public T compile(InternalNode rootNode) {
@@ -28,11 +28,11 @@ public abstract class AbstractCompiler<T> implements Compiler<T> {
         if (child instanceof BinaryNode) {
             BinaryNode bNode = (BinaryNode) child;
 
-            return handleBinaryNode(bNode);
+            return handleBinaryNode(bNode, bNode.getToken().tokenType);
         } else if (child instanceof LeafNode) {
             LeafNode lNode = (LeafNode) child;
 
-            return handleLeafNode(lNode);
+            return handleLeafNode(lNode, lNode.getToken().tokenType);
         }
 
         // UNREACHABLE
