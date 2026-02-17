@@ -59,12 +59,12 @@ public class HeartbeatSchedulerTest {
 
         String id = "foobar";
 
-        heartbeats.subscribeRequest(id, createConfig(100));
-        TimeUnit.MILLISECONDS.sleep(350);
+        heartbeats.subscribeRequest(id, createConfig(250));
+        TimeUnit.MILLISECONDS.sleep(1200);
         heartbeats.unsubscribeRequest(id);
         TimeUnit.MILLISECONDS.sleep(1000);
 
-        // Should send heartbeat at times: 0, 100, 200, 300
-        WireMock.verify(4, WireMock.postRequestedFor(WireMock.urlEqualTo(ENDPOINT)));
+        // Should send heartbeat at times: 0, 250, 500, 750, 1000
+        WireMock.verify(5, WireMock.postRequestedFor(WireMock.urlEqualTo(ENDPOINT)));
     }
 }
