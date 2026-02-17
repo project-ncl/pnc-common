@@ -132,7 +132,7 @@ public class SuffixedVersion implements Comparable<SuffixedVersion> {
         return Version.isValidOSGi(getOriginalVersion());
     }
 
-    public final String normalizedVesion() {
+    public final String normalizedVersion() {
         String q = qualifier.isEmpty() ? "" : '.' + qualifier;
         String s = "";
         if (suffix != null && !suffix.isEmpty()) {
@@ -142,14 +142,14 @@ public class SuffixedVersion implements Comparable<SuffixedVersion> {
         return major + "." + minor + "." + micro + q + s;
     }
 
-    public final String unsuffixedVesion() {
+    public final String unsuffixedVersion() {
         String q = qualifier.isEmpty() ? "" : '.' + qualifier;
         return major + "." + minor + "." + micro + q;
     }
 
     @Override
     public String toString() {
-        return normalizedVesion();
+        return normalizedVersion();
     }
 
 }

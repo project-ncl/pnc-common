@@ -95,12 +95,12 @@ public class VersionAnalyzer {
     }
 
     public Optional<String> findBiggestMatchingVersion(String query, Collection<String> versions) {
-        String unsuffixedQuery = versionParser.parse(query).unsuffixedVesion();
+        String unsuffixedQuery = versionParser.parse(query).unsuffixedVersion();
 
         List<SuffixedVersion> candidateSuffixedVersions = versions.stream()
                 .map(versionParser::parseSuffixed)
                 .flatMap(Set::stream)
-                .filter(v -> unsuffixedQuery.equals(v.unsuffixedVesion()))
+                .filter(v -> unsuffixedQuery.equals(v.unsuffixedVersion()))
                 .collect(Collectors.toList());
 
         List<SuffixedVersion> versionsToSearch = Collections.emptyList();
