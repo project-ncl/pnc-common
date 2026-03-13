@@ -17,8 +17,6 @@
  */
 package org.jboss.pnc.common.concurrent.mdc;
 
-import io.opentelemetry.context.Context;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -31,6 +29,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import io.opentelemetry.context.Context;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

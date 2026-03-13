@@ -17,6 +17,16 @@
  */
 package org.jboss.pnc.common.log;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.container.ContainerRequestContext;
+
 import org.jboss.pnc.api.constants.MDCHeaderKeys;
 import org.jboss.pnc.api.constants.MDCKeys;
 import org.jboss.pnc.common.Strings;
@@ -25,15 +35,6 @@ import org.jboss.pnc.common.otel.OtelUtils;
 import org.slf4j.MDC;
 
 import io.opentelemetry.api.trace.SpanContext;
-
-import javax.ws.rs.container.ContainerRequestContext;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

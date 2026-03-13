@@ -17,9 +17,9 @@
  */
 package org.jboss.pnc.common.http;
 
-import io.smallrye.config.WithDefault;
-
 import java.time.Duration;
+
+import io.smallrye.config.WithDefault;
 
 public interface PNCHttpClientConfig {
     RetryConfig retryConfig();

@@ -15,8 +15,12 @@
  */
 package org.jboss.pnc.common.version;
 
-import org.jboss.pnc.api.constants.versions.VersionDistanceRule;
-import org.jboss.pnc.api.constants.versions.VersionFilter;
+import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.EQUAL;
+import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MICRO;
+import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MINOR;
+import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.QUALIFIER;
+import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.RH_SUFFIX;
+import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.SUFFIX;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,12 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.EQUAL;
-import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MICRO;
-import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MINOR;
-import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.QUALIFIER;
-import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.RH_SUFFIX;
-import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.SUFFIX;
+import org.jboss.pnc.api.constants.versions.VersionDistanceRule;
+import org.jboss.pnc.api.constants.versions.VersionFilter;
 
 /**
  * @author Honza Brázdil &lt;jbrazdil@redhat.com&gt;

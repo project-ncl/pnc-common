@@ -17,12 +17,12 @@
  */
 package org.jboss.pnc.common.scm;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jboss.pnc.common.scm.ScmUrlGeneratorProvider.SCMProvider.GERRIT;
 import static org.jboss.pnc.common.scm.ScmUrlGeneratorProvider.SCMProvider.GITHUB;
 import static org.jboss.pnc.common.scm.ScmUrlGeneratorProvider.SCMProvider.GITLAB;
+
+import org.junit.jupiter.api.Test;
 
 public class ScmUrlGeneratorProviderTest {
 

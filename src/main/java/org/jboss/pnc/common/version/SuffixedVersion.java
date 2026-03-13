@@ -15,11 +15,11 @@
  */
 package org.jboss.pnc.common.version;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
 import java.util.Objects;
 import java.util.Optional;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  *

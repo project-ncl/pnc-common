@@ -1,18 +1,18 @@
 package org.jboss.pnc.common.version;
 
-import org.jboss.pnc.api.constants.versions.VersionDistanceRule;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
-
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MAJOR;
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MICRO;
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MINOR;
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.QUALIFIER;
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.RH_SUFFIX;
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.SUFFIX;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
+
+import org.jboss.pnc.api.constants.versions.VersionDistanceRule;
 
 /**
  *

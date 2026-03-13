@@ -17,16 +17,9 @@
  */
 package org.jboss.pnc.common.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.jboss.pnc.api.dto.Request;
-import org.jboss.pnc.common.Json;
+import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
+import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -36,8 +29,18 @@ import java.time.Duration;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
-import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
+import javax.ws.rs.core.MediaType;
+
+import org.jboss.pnc.api.dto.Request;
+import org.jboss.pnc.common.Json;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Wrapper around {@link HttpClient} that can handle PNC {@link Request}s.

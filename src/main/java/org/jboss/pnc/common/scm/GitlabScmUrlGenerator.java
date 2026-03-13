@@ -17,10 +17,11 @@
  */
 package org.jboss.pnc.common.scm;
 
-import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+
+import javax.validation.constraints.NotNull;
 
 public class GitlabScmUrlGenerator implements ScmUrlGenerator {
 
