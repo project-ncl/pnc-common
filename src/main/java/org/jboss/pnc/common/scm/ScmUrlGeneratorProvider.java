@@ -17,13 +17,14 @@
  */
 package org.jboss.pnc.common.scm;
 
-import javax.validation.constraints.NotNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Class to deal with Gerrit/Gitlab information

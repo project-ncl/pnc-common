@@ -1,10 +1,10 @@
 package org.jboss.pnc.common;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class MapsTest {
 

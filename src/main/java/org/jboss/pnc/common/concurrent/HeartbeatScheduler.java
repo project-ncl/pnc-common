@@ -22,11 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import lombok.extern.slf4j.Slf4j;
 import org.jboss.pnc.api.dto.HeartbeatConfig;
 import org.jboss.pnc.api.dto.Request;
-
 import org.jboss.pnc.common.http.PNCHttpClient;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service, which performs regular heartbeat calls using subscription style approach.

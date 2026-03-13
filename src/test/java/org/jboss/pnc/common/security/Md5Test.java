@@ -17,12 +17,12 @@
  */
 package org.jboss.pnc.common.security;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

@@ -17,14 +17,14 @@
  */
 package org.jboss.pnc.common;
 
-import org.jboss.pnc.common.scm.GitSCPUrl;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jboss.pnc.common.scm.GitSCPUrl;
 
 public final class Urls {
 

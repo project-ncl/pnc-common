@@ -17,14 +17,14 @@
  */
 package org.jboss.pnc.common.concurrent.mdc;
 
-import io.opentelemetry.context.Context;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import io.opentelemetry.context.Context;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

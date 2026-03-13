@@ -17,10 +17,10 @@
  */
 package org.jboss.pnc.common;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class NumbersTest {
 

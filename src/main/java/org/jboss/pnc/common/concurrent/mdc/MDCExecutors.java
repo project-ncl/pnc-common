@@ -17,14 +17,14 @@
  */
 package org.jboss.pnc.common.concurrent.mdc;
 
-import org.jboss.pnc.common.concurrent.NamedThreadFactory;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import org.jboss.pnc.common.concurrent.NamedThreadFactory;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

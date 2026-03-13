@@ -1,8 +1,5 @@
 package org.jboss.pnc.common.version;
 
-import org.jboss.pnc.api.constants.versions.VersionDistanceRule;
-import org.junit.jupiter.api.Test;
-
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.EQUAL;
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MAJOR;
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.MICRO;
@@ -12,6 +9,9 @@ import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.R
 import static org.jboss.pnc.common.version.VersionComparator.VersionDifference.SUFFIX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.jboss.pnc.api.constants.versions.VersionDistanceRule;
+import org.junit.jupiter.api.Test;
 
 /**
  *
