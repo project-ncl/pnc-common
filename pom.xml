@@ -102,6 +102,17 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.jboss.pnc.maven-manipulator</groupId>
+      <artifactId>pom-manipulation-common-lite</artifactId>
+      <version>5.2-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.44</version>
