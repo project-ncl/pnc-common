@@ -18,6 +18,8 @@ package org.jboss.pnc.common.version;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.jboss.pnc.mavenmanipulator.common.Version;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

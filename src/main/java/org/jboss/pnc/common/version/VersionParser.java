@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jboss.pnc.mavenmanipulator.common.Version;
+
 public class VersionParser {
 
     private final Map<String, Pattern> versionPatterns = new HashMap<>();
