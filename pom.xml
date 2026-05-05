@@ -38,7 +38,7 @@
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <version.com.redhat.resilience.otel>1.5.0</version.com.redhat.resilience.otel>
+    <version.com.redhat.resilience.otel>2.0.0</version.com.redhat.resilience.otel>
     <tagSuffix/>
     <jackson.version>2.21.2</jackson.version>
   </properties>
@@ -119,7 +119,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.redhat.resilience.otel</groupId>
+      <groupId>org.jboss.pnc.otel</groupId>
       <artifactId>opentelemetry-ext-cli-java</artifactId>
       <version>${version.com.redhat.resilience.otel}</version>
     </dependency>
