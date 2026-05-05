@@ -17,7 +17,7 @@
  */
 package org.jboss.pnc.common.otel;
 
-import static com.redhat.resilience.otel.internal.OTelContextUtil.extractTraceState;
+import static org.jboss.pnc.otel.internal.OTelContextUtil.extractTraceState;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,10 +29,9 @@ import javax.ws.rs.container.ContainerRequestContext;
 
 import org.jboss.pnc.api.constants.MDCHeaderKeys;
 import org.jboss.pnc.common.Strings;
+import org.jboss.pnc.otel.internal.OTelContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.redhat.resilience.otel.internal.OTelContextUtil;
 
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
