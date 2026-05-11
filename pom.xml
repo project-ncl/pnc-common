@@ -6,7 +6,7 @@
     <groupId>org.jboss</groupId>
     <artifactId>jboss-parent</artifactId>
     <version>51</version>
-    <relativePath />
+    <relativePath/>
   </parent>
 
   <groupId>org.jboss.pnc</groupId>
@@ -39,7 +39,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <version.com.redhat.resilience.otel>2.0.0</version.com.redhat.resilience.otel>
-    <tagSuffix />
+    <tagSuffix/>
     <jackson.version>2.21.2</jackson.version>
   </properties>
 
@@ -184,7 +184,7 @@
         <version>3.4.0</version>
         <configuration>
           <java>
-            <removeUnusedImports />
+            <removeUnusedImports/>
             <importOrder>
               <file>java-import-order.txt</file>
             </importOrder>
