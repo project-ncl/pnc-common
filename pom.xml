@@ -104,7 +104,7 @@
     <dependency>
       <groupId>org.jboss.pnc.maven-manipulator</groupId>
       <artifactId>pom-manipulation-common-lite</artifactId>
-      <version>5.2</version>
+      <version>5.3</version>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
