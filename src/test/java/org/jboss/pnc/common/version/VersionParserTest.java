@@ -81,6 +81,15 @@ public class VersionParserTest {
     }
 
     @Test
+    public void testRHIBMVersionConversions() {
+        VersionParser versionParser = new VersionParser("ibm", "redhat", "temporary-redhat", "temporary-ibm");
+        assertEquals("1.1.0.Final", versionParser.parse("1.1.Final.redhat-00001").unsuffixedVersion());
+        assertEquals("1.1.0.Final", versionParser.parse("1.1.Final.temporary-redhat-00001").unsuffixedVersion());
+        assertEquals("1.1.0", versionParser.parse("1.1").unsuffixedVersion());
+        assertEquals("1.1.0", versionParser.parse("1.1.temporary-ibm-00001").unsuffixedVersion());
+    }
+
+    @Test
     public void testTemporarySuffix() {
         List<String> versions = Arrays
                 .asList("1.5.8", "1.5.8-patch-01", "1.6.1", "1.7.21.t20180522-115319-991-redhat-1");
@@ -114,7 +123,7 @@ public class VersionParserTest {
     }
 
     @Test
-    public void shuldNormalizeVersionWhenParsing() {
+    public void shouldNormalizeVersionWhenParsing() {
         VersionParser vp1 = new VersionParser("A", "B-A", "B-C-A");
         assertEquals(new SuffixedVersion(1, 5, 8, "", "1.5.8"), vp1.parse("1.5.8"));
         assertEquals(new SuffixedVersion(1, 5, 8, "", "A", 2, "1.5.8.A-2"), vp1.parse("1.5.8.A-2"));

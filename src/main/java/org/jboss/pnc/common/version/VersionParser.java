@@ -51,7 +51,7 @@ public class VersionParser {
 
     /**
      * Parses the version string and returns the normalized version (with longest suffix). Because the version may have
-     * any of the suffixes (ore none) the normalized version is the one with the longest suffix (or in other words with
+     * any of the suffixes (or none) the normalized version is the one with the longest suffix (or in other words with
      * shortest version string after removing the suffix).
      *
      * @param version The original version string.
@@ -89,7 +89,7 @@ public class VersionParser {
     }
 
     private static SuffixedVersion parseVersion(Matcher versionMatcher, String version)
-            throws NumberFormatException, IllegalArgumentException {
+            throws IllegalArgumentException {
         if (!versionMatcher.matches()) {
             throw new IllegalArgumentException("Version " + version + "is unparsable");
         }
@@ -106,7 +106,7 @@ public class VersionParser {
     }
 
     private static SuffixedVersion parseVersion(Matcher versionMatcher, String version, String parseSuffix)
-            throws NumberFormatException, IllegalArgumentException {
+            throws IllegalArgumentException {
         if (!versionMatcher.matches()) {
             throw new IllegalArgumentException("Version " + version + "is unparsable");
         }

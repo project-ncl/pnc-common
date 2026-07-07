@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
  */
 public class VersionAnalyzerTest {
 
-    private VersionAnalyzer versionFinder = new VersionAnalyzer(Collections.singletonList("redhat"));
+    private final VersionAnalyzer versionFinder = new VersionAnalyzer(Collections.singletonList("redhat"));
 
     private static final String NO_BUILT_VERSION = "1.1.3";
 
@@ -103,7 +103,7 @@ public class VersionAnalyzerTest {
 
     @Test
     public void getBestMatchVersionForNonExistingGAV() {
-        Optional<String> bmv = versionFinder.findBiggestMatchingVersion("0.0.1", Collections.EMPTY_LIST);
+        Optional<String> bmv = versionFinder.findBiggestMatchingVersion("0.0.1", Collections.emptyList());
         assertFalse(bmv.isPresent(), "Best match version expected to not be present");
     }
 

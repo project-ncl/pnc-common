@@ -17,14 +17,14 @@
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
   <developers>
     <developer>
       <organization>RedHat</organization>
-      <organizationUrl>http://www.redhat.com</organizationUrl>
+      <organizationUrl>https://www.redhat.com</organizationUrl>
     </developer>
   </developers>
   <scm>
