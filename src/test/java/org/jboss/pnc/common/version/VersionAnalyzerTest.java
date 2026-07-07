@@ -19,6 +19,9 @@ import org.junit.jupiter.api.Test;
 public class VersionAnalyzerTest {
 
     private VersionAnalyzer versionFinder = new VersionAnalyzer(Collections.singletonList("redhat"));
+    private VersionAnalyzer onlyLwFinder = new VersionAnalyzer(Collections.singletonList("rhlw"));
+    private VersionAnalyzer onlyLwDpFinder = new VersionAnalyzer(Collections.singletonList("rhlw-dp"));
+    private VersionAnalyzer lwDpAndLwFinder = new VersionAnalyzer(List.of("rhlw-dp", "rhlw"));
 
     private static final String NO_BUILT_VERSION = "1.1.3";
 
@@ -26,11 +29,14 @@ public class VersionAnalyzerTest {
 
     private static final String BUILT_VERSION = "1.1.4";
 
+    // both rhlw and rhlw-dp builds
     private static final String BUILT_VERSION_RH = BUILT_VERSION + "-redhat-20";
+    private static final String BUILT_VERSION_LW = BUILT_VERSION + "-rhlw-20";
+    private static final String BUILT_VERSION_LW_DP = BUILT_VERSION + "-rhlw-dp-42";
 
-    private static final String BUILT_VERSION_2 = "1.1.4.Final";
-
-    private static final String BUILT_VERSION_2_RH = BUILT_VERSION_2 + "-redhat-10";
+    // only rhlw build
+    private static final String BUILT_VERSION_2 = "1.1.42";
+    private static final String BUILT_VERSION_2_LW = BUILT_VERSION_2 + "-rhlw-20";
 
     private static final String MULTI_BUILT_VERSION = "1.1.5";
 
@@ -72,8 +78,10 @@ public class VersionAnalyzerTest {
             OTHER_RH_VERSION_3,
             MULTI_BUILT_VERSION_RH2,
             BUILT_VERSION_RH,
+            BUILT_VERSION_LW,
+            BUILT_VERSION_LW_DP,
+            BUILT_VERSION_2_LW,
             MULTI_BUILT_VERSION_RH1,
-            BUILT_VERSION_2_RH,
             MULTI_BUILT_VERSION_RH_BEST,
             MULTI_BUILT_VERSION_RH4,
             NON_OSGI_VERSION,
@@ -92,14 +100,43 @@ public class VersionAnalyzerTest {
             OTHER_RH_VERSION_3,
             MULTI_BUILT_VERSION_RH2,
             BUILT_VERSION_RH,
+            BUILT_VERSION_LW,
+            BUILT_VERSION_LW_DP,
+            BUILT_VERSION_2_LW,
             MULTI_BUILT_VERSION_RH1,
-            BUILT_VERSION_2_RH,
             MULTI_BUILT_VERSION_RH_BEST,
             MULTI_BUILT_VERSION_RH4,
             NON_OSGI_VERSION_RHT,
             NON_OSGI_VERSION_2_RHT,
             NON_OSGI_VERSION_3_RHT,
             NON_OSGI_VERSION_4_RHT);
+
+    @Test
+    public void onlyLwFinder_noBuiltLwVersion_noVersionFound() {
+        Optional<String> bmv = onlyLwFinder.findBiggestMatchingVersion(NO_BUILT_VERSION, All_VERSIONS);
+        assertTrue(bmv.isEmpty());
+    }
+
+    @Test
+    public void onlyLwFinder_builtLwVersion_findsLwVersion() {
+        checkBMV(onlyLwFinder, BUILT_VERSION_LW, BUILT_VERSION, All_VERSIONS.toArray(new String[All_VERSIONS.size()]));
+    }
+
+    @Test
+    public void bothLwdpAndLwFinder_builtBothSuffixes_findsLwDpVersion() {
+        checkBMV(lwDpAndLwFinder, BUILT_VERSION_LW_DP, BUILT_VERSION, All_VERSIONS.toArray(new String[All_VERSIONS.size()]));
+    }
+
+    @Test
+    public void bothLwdpAndLwFinder_builtOnlyLwSuffix_findsLwVersion() {
+        checkBMV(lwDpAndLwFinder, BUILT_VERSION_2_LW, BUILT_VERSION_2, All_VERSIONS.toArray(new String[All_VERSIONS.size()]));
+    }
+
+    @Test
+    public void onlyLwdpFinder_builtOnlyLwSuffix_noVersionFound() {
+        Optional<String> bmv = onlyLwDpFinder.findBiggestMatchingVersion(BUILT_VERSION_2, All_VERSIONS);
+        assertTrue(bmv.isEmpty());
+    }
 
     @Test
     public void getBestMatchVersionForNonExistingGAV() {
@@ -111,12 +148,6 @@ public class VersionAnalyzerTest {
     public void getBestMatchVersionForNotBuiltGAV() {
         Optional<String> bmv = versionFinder.findBiggestMatchingVersion(NO_BUILT_VERSION, All_VERSIONS);
         assertFalse(bmv.isPresent(), "Best match version expected to not be present");
-    }
-
-    @Test
-    public void getBestMatchVersionForBuiltGAV() {
-        checkBMV(BUILT_VERSION_RH, BUILT_VERSION, All_VERSIONS.toArray(new String[All_VERSIONS.size()]));
-        checkBMV(BUILT_VERSION_2_RH, BUILT_VERSION_2, All_VERSIONS.toArray(new String[All_VERSIONS.size()]));
     }
 
     @Test
