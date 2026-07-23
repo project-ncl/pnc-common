@@ -86,7 +86,7 @@
     <dependency>
       <groupId>io.smallrye.config</groupId>
       <artifactId>smallrye-config-core</artifactId>
-      <version>3.18.0</version>
+      <version>3.18.1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
