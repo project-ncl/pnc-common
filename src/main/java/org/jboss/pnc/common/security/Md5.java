@@ -17,7 +17,6 @@
  */
 package org.jboss.pnc.common.security;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -34,7 +33,7 @@ public class Md5 {
         md = MessageDigest.getInstance("MD5");
     }
 
-    public static String digest(String message) throws NoSuchAlgorithmException, IOException {
+    public static String digest(String message) throws NoSuchAlgorithmException {
         return CheckSum.calculateDigest(message, "MD5");
     }
 

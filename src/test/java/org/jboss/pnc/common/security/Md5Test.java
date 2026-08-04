@@ -17,7 +17,6 @@
  */
 package org.jboss.pnc.common.security;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
@@ -30,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class Md5Test {
 
     @Test
-    public void calculateMd5() throws IOException, NoSuchAlgorithmException {
+    public void calculateMd5() throws NoSuchAlgorithmException {
         String encoded = Md5.digest("The quick brown fox jumps over the lazy dog.");
         String expected = "e4d909c290d0fb1ca068ffaddf22cbd0";
 
@@ -39,7 +38,7 @@ public class Md5Test {
     }
 
     @Test
-    public void testWithLeadingZeroInTheSum() throws IOException, NoSuchAlgorithmException {
+    public void testWithLeadingZeroInTheSum() throws NoSuchAlgorithmException {
         String encoded = Md5.digest("363");
         String expected = "00411460f7c92d2124a67ea0f4cb5f85";
         Assertions.assertEquals(expected, encoded);
