@@ -17,7 +17,6 @@
  */
 package org.jboss.pnc.common.security;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
@@ -30,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class Sha256Test {
 
     @Test
-    public void calculateSha256() throws IOException, NoSuchAlgorithmException {
+    public void calculateSha256() throws NoSuchAlgorithmException {
         String encoded = Sha256.digest("The quick brown fox jumps over the lazy dog.");
         String expected = "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c";
 
@@ -39,7 +38,7 @@ public class Sha256Test {
     }
 
     @Test
-    public void testWithLeadingZeroInTheSum() throws IOException, NoSuchAlgorithmException {
+    public void testWithLeadingZeroInTheSum() throws NoSuchAlgorithmException {
         String encoded = Sha256.digest("886");
         String expected = "000f21ac06aceb9cdd0575e82d0d85fc39bed0a7a1d71970ba1641666a44f530";
         Assertions.assertEquals(expected, encoded);

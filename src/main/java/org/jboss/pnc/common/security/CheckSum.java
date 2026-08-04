@@ -17,8 +17,6 @@
  */
 package org.jboss.pnc.common.security;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -27,22 +25,10 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
 public class CheckSum {
-    static String calculateDigest(String message, String algorithm) throws NoSuchAlgorithmException, IOException {
+    static String calculateDigest(String message, String algorithm) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance(algorithm);
-
-        StringReader reader = new StringReader(message);
-        char[] buffer = new char[1024];
-
-        while (true) {
-            int read = reader.read(buffer);
-            if (read == -1) {
-                break;
-            }
-            md.update(String.valueOf(buffer, 0, read).getBytes(StandardCharsets.UTF_8));
-        }
-
-        byte[] digest = md.digest();
-        return format(digest);
+        md.update(message.getBytes(StandardCharsets.UTF_8));
+        return format(md.digest());
     }
 
     static String format(byte[] digest) {
