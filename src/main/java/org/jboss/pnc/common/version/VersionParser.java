@@ -70,6 +70,15 @@ public class VersionParser {
     }
 
     /**
+     * Indicate whether a list of suffixes was provided to this object
+     *
+     * @return true or false
+     */
+    public boolean hasSuffixesConfigured() {
+        return !versionPatterns.isEmpty();
+    }
+
+    /**
      * Returns suffixed versions that can be parsed from the provided version string.
      *
      * @param version The version string to parse
