@@ -3,9 +3,6 @@ package org.jboss.pnc.common.http;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -19,13 +16,10 @@ import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.jboss.pnc.api.dto.Request;
 import org.jboss.pnc.common.Json;
@@ -54,7 +48,7 @@ public class HttpUtils {
     }
 
     private static String performHttpGetRequest(URI uri, HttpUriRequest httpRequest) {
-        try (CloseableHttpClient httpClient = HttpUtils.getPermissiveHttpClient();
+        try (CloseableHttpClient httpClient = HttpUtils.getHttpClient();
                 CloseableHttpResponse response = httpClient.execute(httpRequest)) {
 
             int status = response.getStatusLine().getStatusCode();
@@ -134,7 +128,7 @@ public class HttpUtils {
     }
 
     private static void performHttpRequest(URI uri, Object payload, HttpUriRequest httpRequest) {
-        try (CloseableHttpClient httpClient = HttpUtils.getPermissiveHttpClient()) {
+        try (CloseableHttpClient httpClient = HttpUtils.getHttpClient()) {
             try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
                 if (isSuccess(response.getStatusLine().getStatusCode())) {
                     log.debug(
@@ -163,37 +157,22 @@ public class HttpUtils {
      * NOTE: Be sure to close the HTTP connection after every request!
      *
      * @param retries - int number of retries to execute request in case of failure
-     * @return Closeable "permissive" HttpClient instance, ignoring invalid SSL certificates.
+     * @return Closeable HttpClient instance validating SSL certificates
      */
-    public static CloseableHttpClient getPermissiveHttpClient(int retries) {
-        SSLContextBuilder builder = new SSLContextBuilder();
-        try {
-            builder.loadTrustMaterial(null, (chain, authType) -> true);
-        } catch (NoSuchAlgorithmException | KeyStoreException e1) {
-            log.error("Error creating SSL Context Builder with trusted certificates.", e1);
-        }
-
-        SSLConnectionSocketFactory sslSF = null;
-        try {
-            sslSF = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
-        } catch (KeyManagementException | NoSuchAlgorithmException e1) {
-            log.error("Error creating SSL Connection Factory.", e1);
-        }
-
+    public static CloseableHttpClient getHttpClient(int retries) {
         return HttpClients.custom()
+                .useSystemProperties()
                 .setRetryHandler(new DefaultHttpRequestRetryHandler(retries, false))
-                .setSSLSocketFactory(sslSF)
-                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                 .build();
     }
 
     /**
-     * @return Closeable "permissive" HttpClient instance, ignoring invalid SSL certificates, using 3 attempts to retry
-     *         failed request
-     * @see #getPermissiveHttpClient(int)
+     * @return Closeable HttpClient instance validating SSL certificates, using 3 attempts to retry failed
+     *         request
+     * @see #getHttpClient(int)
      */
-    public static CloseableHttpClient getPermissiveHttpClient() {
-        return getPermissiveHttpClient(3);
+    public static CloseableHttpClient getHttpClient() {
+        return getHttpClient(3);
     }
 
     public static boolean isSuccess(int statusCode) {
