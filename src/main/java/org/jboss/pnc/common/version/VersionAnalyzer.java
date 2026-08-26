@@ -95,24 +95,67 @@ public class VersionAnalyzer {
     }
 
     public Optional<String> findBiggestMatchingVersion(String query, Collection<String> versions) {
+        // in case there is some suffix in the current version analyzer's parser configured
+        // so find the best matching version with the suffix
+        if (versionParser.hasSuffixesConfigured()) {
+            return findBiggestMatchingVersionSuffixed(query, versions);
+        }
+
+        // in case the code gets here, we know that the current version analyzer's parser has no suffixes configured
+        // so in case the version, for which we search the biggest matching version has no suffix as well, and is present in the collection of provided versions, we just return this one
         String unsuffixedQuery = versionParser.parse(query).unsuffixedVersion();
+        if (unsuffixedQuery.equals(query) && versions.contains(query)) {
+            return Optional.of(query);
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Find the best fitting version, from the provided versions, which is suffixed with the most desired suffix.
+     *
+     * @param query version, for which we find the best fitting version
+     * @param versions provided list of versions, from which we search for the best fitting version
+     *
+     * @return the best fitting version, if any
+     */
+    private Optional<String> findBiggestMatchingVersionSuffixed(String query, Collection<String> versions) {
+        String unsuffixedQuery = versionParser.parse(query).unsuffixedVersion();
+
+        // this whole machinery works when we have the current version analyzer's parser has some suffixes configured
+        // suppose suffixes are: 'redhat', 'foo' (in this order of preference)
+        // further suppose that given is:
+        //      query="1.2.3", and
+        //      versions=['1.2.4.redhat-4', '1.2.3.foo-9', '1.2.3.redhat-1', '1.2.3.redhat-2', '1.2.3']
 
         List<SuffixedVersion> candidateSuffixedVersions = versions.stream()
                 .map(versionParser::parseSuffixed)
                 .flatMap(Set::stream)
                 .filter(v -> unsuffixedQuery.equals(v.unsuffixedVersion()))
                 .collect(Collectors.toList());
+        // above code filters from the provided versions only ones, which are both:
+        // suffixed, and at the same time match the unsuffixed part ('1.2.3' in this case)
+        // hence: candidateSuffixedVersions=['1.2.3.foo-9', '1.2.3.redhat-1', '1.2.3.redhat-2']
+        // i.e.:
+        //      '1.2.3' is thrown away because it's not suffixed
+        //      '1.2.4.redhat-4' is thrown away because even though it's suffixed, it doesn't match the unsuffixed part
 
+        // finally, going through suffixes in their order of preference ('redhat' firstly, 'foo' secondly)
+        // until we hit some versions with the most preferred suffix (if any)
         List<SuffixedVersion> versionsToSearch = Collections.emptyList();
         for (String suffix : suffixes) {
             versionsToSearch = candidateSuffixedVersions.stream()
                     .filter(v -> suffix.equals(v.getSuffix().get()))
                     .collect(Collectors.toList());
+            // anytime we find some version from the most desired suffix, break
             if (!versionsToSearch.isEmpty()) {
                 break;
             }
         }
+        // since we prefer 'redhat' suffix firstly, we are left with: versionsToSearch=['1.2.3.redhat-1', '1.2.3.redhat-2']
 
+        // now we have versionsToSearch from the most desired suffix, just take the version with the biggest number
+        // i.e., at first it's '1.2.3.redhat-1', but then, it ends up being '1.2.3.redhat-2'
         String bestMatchVersion = null;
         int biggestBuildNumber = 0;
         for (SuffixedVersion ver : versionsToSearch) {
@@ -121,6 +164,7 @@ public class VersionAnalyzer {
                 bestMatchVersion = ver.getOriginalVersion();
                 biggestBuildNumber = foundBuildNumber;
             } else if (foundBuildNumber == biggestBuildNumber) {
+                // just in case we have the same build number (=suffix version), then for instance prefer osgi version
                 bestMatchVersion = getMoreSpecificVersion(bestMatchVersion, ver.getOriginalVersion());
             }
         }

@@ -321,4 +321,16 @@ public class VersionAnalyzerTest {
         checkBMV(versionAnalyzer, "1.4.0.redhat-4", version, avaliableVersionsMultiple);
     }
 
+    @Test
+    public void testFindingOfUnsuffixedVersion() {
+        VersionAnalyzer versionAnalyzer = new VersionAnalyzer(Collections.emptyList());
+        String version = "1.2.3";
+
+        assertEquals(Optional.empty(), versionAnalyzer.findBiggestMatchingVersion(version, Collections.emptyList()));
+        assertEquals(
+                Optional.empty(),
+                versionAnalyzer.findBiggestMatchingVersion(version, List.of(version + ".redhat-1")));
+        checkBMV(versionAnalyzer, version, version, new String[] { version });
+        checkBMV(versionAnalyzer, version, version, new String[] { version + ".redhat-1", version });
+    }
 }

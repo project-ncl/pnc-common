@@ -34,6 +34,14 @@ public class VersionParserTest {
     }
 
     @Test
+    public void testParserWithoutSuffix() {
+        VersionParser versionParser = new VersionParser();
+
+        assertEquals(new SuffixedVersion(1, 2, 3, "", "1.2.3"), versionParser.parse("1.2.3"));
+        assertEquals(new SuffixedVersion(1, 2, 3, "Final", "1.2.3.Final"), versionParser.parse("1.2.3.Final"));
+    }
+
+    @Test
     public void testVersionParser() {
         VersionParser versionParser = new VersionParser("redhat");
         assertEquals(new SuffixedVersion(1, 1, 0, "Final", "1.1.Final"), versionParser.parse("1.1.Final"));
