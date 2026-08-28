@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.jboss.pnc.api.constants.versions.VersionFilter;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -332,5 +333,43 @@ public class VersionAnalyzerTest {
                 versionAnalyzer.findBiggestMatchingVersion(version, List.of(version + ".redhat-1")));
         checkBMV(versionAnalyzer, version, version, new String[] { version });
         checkBMV(versionAnalyzer, version, version, new String[] { version + ".redhat-1", version });
+    }
+
+    @Test
+    public void testVersionFilteringWithSuffixedVersionAnalyzer() {
+        VersionAnalyzer versionAnalyzer = new VersionAnalyzer(List.of("redhat"));
+        String version = "1.2.3.redhat-1";
+
+        List<String> result1 = versionAnalyzer.filterVersions(version, VersionFilter.ALL, List.of(version));
+        List<String> result2 = versionAnalyzer.filterVersions(version, VersionFilter.ALL, List.of("1.2.3"));
+        List<String> result3 = versionAnalyzer.filterVersions(
+                version,
+                VersionFilter.ALL,
+                List.of("1.2.3.redhat-8", "2.0.8.redhat-1", "1.2.3", "1.2.3.redhat-2", "1.2.3.Final"));
+
+        assertEquals(1, result1.size());
+        assertEquals(0, result2.size());
+        assertEquals(3, result3.size());
+        assertTrue(result3.stream().allMatch(v -> v.contains("redhat")));
+    }
+
+    @Test
+    public void testVersionFilteringWithUnsuffixedVersionAnalyzer() {
+        VersionAnalyzer versionAnalyzer = new VersionAnalyzer(Collections.emptyList());
+        String version = "1.2.3";
+
+        List<String> result1 = versionAnalyzer.filterVersions(version, VersionFilter.ALL, List.of(version, "42.42.42"));
+        List<String> result2 = versionAnalyzer.filterVersions(
+                version,
+                VersionFilter.MAJOR_MINOR_MICRO_QUALIFIER,
+                List.of(version, "42.42.42", "1.2.3.redhat-1", "1.2.3.Final"));
+        List<String> result3 = versionAnalyzer.filterVersions(
+                version,
+                VersionFilter.MAJOR_MINOR_MICRO_QUALIFIER,
+                List.of("1.2.3.redhat-1", "42.42.42.redhat-42"));
+
+        assertEquals(2, result1.size());
+        assertEquals(1, result2.size());
+        assertEquals(0, result3.size());
     }
 }

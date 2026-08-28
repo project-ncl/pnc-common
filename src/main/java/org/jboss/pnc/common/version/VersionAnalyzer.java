@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -79,8 +80,17 @@ public class VersionAnalyzer {
     public List<String> filterVersions(String query, VersionFilter vf, Collection<String> versions) {
         VersionComparator vc = new VersionComparator(query, distanceRule, versionParser);
 
+        final Function<String, Set<SuffixedVersion>> parsingFunction;
+        if (versionParser.hasSuffixesConfigured()) {
+            // in case suffixes are configured, prefer parsing of suffixed versions
+            parsingFunction = versionParser::parseSuffixed;
+        } else {
+            // otherwise, continue with parsing of version without any suffixes
+            parsingFunction = v -> Set.of(VersionParser.parseUnsuffixed(v));
+        }
+
         return versions.stream()
-                .map(versionParser::parseSuffixed)
+                .map(parsingFunction)
                 .flatMap(Set::stream)
                 .filter(v -> matches(vc, v, vf))
                 .map(SuffixedVersion::getOriginalVersion)
