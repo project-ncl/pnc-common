@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jboss</groupId>
     <artifactId>jboss-parent</artifactId>
-    <version>53</version>
+    <version>54</version>
     <relativePath/>
   </parent>
 
@@ -34,7 +34,6 @@
     <url>scm:git:git@github.com:project-ncl/pnc-common.git</url>
   </scm>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.release>11</maven.compiler.release>
     <version.org.jboss.pnc.otel>2.1.0</version.org.jboss.pnc.otel>
@@ -247,64 +246,14 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>3.3.1</version>
         <configuration>
           <signTag>false</signTag>
           <tagNameFormat>@{project.version}${tagSuffix}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
-          <releaseProfiles>release</releaseProfiles>
+          <releaseProfiles>central-release</releaseProfiles>
           <goals>deploy</goals>
         </configuration>
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>3.4.0</version>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.12.0</version>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.2.8</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-                <phase>verify</phase>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
