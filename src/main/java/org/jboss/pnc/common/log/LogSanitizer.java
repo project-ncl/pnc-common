@@ -33,6 +33,11 @@ public class LogSanitizer {
 
     private static final Pattern BASIC_CREDENTIALS = Pattern.compile("(?i)\\b(Basic\\s+)[A-Za-z0-9+/=]{20,}");
 
+    // Credentials embedded in a URL's userinfo (scheme://user:token@host). Userinfo cannot contain '/',
+    // '@' or whitespace, so the match self-terminates at the authority's '@'. scp-like git@host:org/repo
+    // has no "://" and is left untouched.
+    private static final Pattern URL_USERINFO_SECRET = Pattern.compile("(?i)([a-z][a-z0-9+.-]*://)[^/@\\s]+@");
+
     public static String clean(String input) {
         return input == null ? null : CONTROL_CHARS.matcher(input).replaceAll("_");
     }
@@ -78,8 +83,8 @@ public class LogSanitizer {
 
     /**
      * Masks common secrets: values of keys whose names contain a known secret keyword (password, secret, token,
-     * api-key, access-key, private-key, credential) and {@code Bearer}/{@code Basic} credentials anywhere in the
-     * input.
+     * api-key, access-key, private-key, credential), {@code Bearer}/{@code Basic} credentials, and credentials
+     * embedded in a URL's userinfo ({@code scheme://user:token@host}) anywhere in the input.
      *
      * @param input the string to mask, may be null
      * @return the masked string, or null if the input is null
@@ -92,6 +97,7 @@ public class LogSanitizer {
         result = JAVA_PROP_SECRET.matcher(result).replaceAll("$1" + REDACTED);
         result = ENV_VAR_SECRET.matcher(result).replaceAll("$1" + REDACTED);
         result = BEARER_TOKEN.matcher(result).replaceAll("$1" + REDACTED);
-        return BASIC_CREDENTIALS.matcher(result).replaceAll("$1" + REDACTED);
+        result = BASIC_CREDENTIALS.matcher(result).replaceAll("$1" + REDACTED);
+        return URL_USERINFO_SECRET.matcher(result).replaceAll("$1" + REDACTED + "@");
     }
 }
