@@ -344,4 +344,30 @@ public class LogSanitizerTest {
                         "java -DrestHeaders=\"Authorization:Basic " + REDACTED
                                 + "\" -d -DrestURL=http://example.com");
     }
+
+    @Test
+    public void maskKnownSecrets_urlUserinfo_credentialRedacted() {
+        assertThat(LogSanitizer.maskKnownSecrets("git clone https://oauth2:" + TOKEN + "@gitlab.com/lw/foo.git ."))
+                .isEqualTo("git clone https://" + REDACTED + "@gitlab.com/lw/foo.git .");
+    }
+
+    @Test
+    public void maskKnownSecrets_urlWithoutUserinfo_inputUnchanged() {
+        assertThat(LogSanitizer.maskKnownSecrets("https://gitlab.com/lw/foo.git"))
+                .isEqualTo("https://gitlab.com/lw/foo.git");
+    }
+
+    @Test
+    public void maskKnownSecrets_scpLikeUrl_inputUnchanged() {
+        assertThat(LogSanitizer.maskKnownSecrets("git@gitlab.com:lw/lw-builds/repo.git"))
+                .isEqualTo("git@gitlab.com:lw/lw-builds/repo.git");
+    }
+
+    @Test
+    public void maskKnownSecrets_urlUserinfoSubsequentArgsPreserved() {
+        assertThat(
+                LogSanitizer.maskKnownSecrets(
+                        "git remote add origin https://user:" + TOKEN + "@github.ibm.com/org/repo.git --verbose"))
+                .isEqualTo("git remote add origin https://" + REDACTED + "@github.ibm.com/org/repo.git --verbose");
+    }
 }
