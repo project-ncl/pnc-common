@@ -51,6 +51,18 @@ public class ScmUrlNormalizerTest {
     }
 
     @Test
+    public void shouldIgnoreFragment() {
+        // scp-like and scheme-based URLs with a '#ref' fragment normalize to the same host/path as without it
+        String expected = "gitlab.example.com/lw/lw-builds/foo";
+        assertThat(ScmUrlNormalizer.normalize("git@gitlab.example.com:lw/lw-builds/foo.git#abc123"))
+                .isEqualTo(expected);
+        assertThat(ScmUrlNormalizer.normalize("git@gitlab.example.com:lw/lw-builds/foo.git#feature/x"))
+                .isEqualTo(expected);
+        assertThat(ScmUrlNormalizer.normalize("git+ssh://git@gitlab.example.com/lw/lw-builds/foo.git#abc123"))
+                .isEqualTo(expected);
+    }
+
+    @Test
     public void shouldLowerCaseAndTrim() {
         assertThat(ScmUrlNormalizer.normalize("  HTTPS://GitLab.Example.com/LW/Repo.git  "))
                 .isEqualTo("gitlab.example.com/lw/repo");

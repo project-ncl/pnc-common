@@ -25,6 +25,9 @@ import java.util.regex.Pattern;
  * This class is used only for parsing git urls with scp-like syntax.
  *
  * e.g. git@github.com:project-ncl/pnc.git
+ *
+ * An optional {@code #fragment} (the revision/ref, e.g. git@github.com:project-ncl/pnc.git#1.0.0) is accepted. It is
+ * not part of the host or the path: see {@link #getFragment()}.
  */
 public class GitSCPUrl {
     private final String user;
@@ -32,6 +35,7 @@ public class GitSCPUrl {
     private final String path;
     private final String owner;
     private final String repositoryName;
+    private final String fragment;
 
     /**
      * Gitlab naming convention:
@@ -45,16 +49,19 @@ public class GitSCPUrl {
      * emojis :)
      *
      * We're also not adding space on the regex. Maybe we should in the future?
+     *
+     * The optional trailing {@code #fragment} is a revision/ref, which can contain a '/' (e.g. feature/x).
      */
     private static Pattern scpPattern = Pattern.compile(
-            "^((?<user>\\w+)@)?(?<host>[-.+\\w]+)[:/]{1,2}(?<path>((?<owner>[-.+\\w]+)/)*(?<reponame>[-.+\\w]+))[/]?$");
+            "^((?<user>\\w+)@)?(?<host>[-.+\\w]+)[:/]{1,2}(?<path>((?<owner>[-.+\\w]+)/)*(?<reponame>[-.+\\w]+))[/]?(#(?<fragment>[-.+/\\w]+))?$");
 
-    private GitSCPUrl(String user, String host, String path, String owner, String repositoryName) {
+    private GitSCPUrl(String user, String host, String path, String owner, String repositoryName, String fragment) {
         this.user = user;
         this.host = host;
         this.path = path;
         this.owner = owner;
         this.repositoryName = repositoryName;
+        this.fragment = fragment;
     }
 
     public static GitSCPUrl parse(String url) throws MalformedURLException {
@@ -72,7 +79,8 @@ public class GitSCPUrl {
                 matcher.group("host"),
                 matcher.group("path"),
                 matcher.group("owner"),
-                matcher.group("reponame").replaceAll(".git$", ""));
+                matcher.group("reponame").replaceAll(".git$", ""),
+                matcher.group("fragment"));
     }
 
     public String getUser() {
@@ -95,6 +103,16 @@ public class GitSCPUrl {
         return repositoryName;
     }
 
+    /**
+     * @return the part after '#' (revision/ref) without the '#', or null if the URL has none
+     */
+    public String getFragment() {
+        return fragment;
+    }
+
+    /**
+     * @return host and path, without the user and without the fragment
+     */
     public String getHostWithPath() {
         return host + "/" + path;
     }
