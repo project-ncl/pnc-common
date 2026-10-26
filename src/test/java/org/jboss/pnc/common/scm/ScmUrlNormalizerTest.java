@@ -57,6 +57,19 @@ public class ScmUrlNormalizerTest {
     }
 
     @Test
+    public void shouldDropRefFragmentAcrossAllUrlForms() {
+        // a '#ref' fragment is a revision selector, not part of the repo identity, so it is dropped on every form
+        // (and the '.git' suffix is still stripped even though the fragment follows it)
+        String expected = "gitlab.example.com/lw/lw-builds/foo";
+        assertThat(ScmUrlNormalizer.normalize("https://gitlab.example.com/lw/lw-builds/foo.git#abc123"))
+                .isEqualTo(expected);
+        assertThat(ScmUrlNormalizer.normalize("git+ssh://git@gitlab.example.com/lw/lw-builds/foo.git#v1.0"))
+                .isEqualTo(expected);
+        assertThat(ScmUrlNormalizer.normalize("git@gitlab.example.com:lw/lw-builds/foo.git#abc123"))
+                .isEqualTo(expected);
+    }
+
+    @Test
     public void shouldReturnEmptyForNullOrBlank() {
         assertThat(ScmUrlNormalizer.normalize(null)).isEmpty();
         assertThat(ScmUrlNormalizer.normalize("   ")).isEmpty();
