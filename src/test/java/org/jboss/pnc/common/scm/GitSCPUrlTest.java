@@ -135,6 +135,62 @@ public class GitSCPUrlTest {
     }
 
     @Test
+    public void shouldParseWithFragment() throws Exception {
+        GitSCPUrl url = GitSCPUrl.parse("git@github.com:project-ncl/pnc.git#abc123");
+
+        assertThat(url.getUser()).isEqualTo("git");
+        assertThat(url.getHost()).isEqualTo("github.com");
+        assertThat(url.getPath()).isEqualTo("project-ncl/pnc.git");
+        assertThat(url.getOwner()).isEqualTo("project-ncl");
+        assertThat(url.getRepositoryName()).isEqualTo("pnc");
+        assertThat(url.getFragment()).isEqualTo("abc123");
+        // the fragment is neither part of the host nor of the path
+        assertThat(url.getHostWithPath()).isEqualTo("github.com/project-ncl/pnc.git");
+    }
+
+    @Test
+    public void shouldParseFragmentVariants() throws Exception {
+        // without .git, with a trailing slash before the fragment, tags and branches containing '.', '-', '/'
+        assertThat(GitSCPUrl.parse("git@github.com:project-ncl/pnc#1.0.0").getFragment()).isEqualTo("1.0.0");
+        assertThat(GitSCPUrl.parse("git@github.com:project-ncl/pnc/#1.0.0").getFragment()).isEqualTo("1.0.0");
+        assertThat(GitSCPUrl.parse("git@github.com:project-ncl/pnc.git#feature/my-branch_2").getFragment())
+                .isEqualTo("feature/my-branch_2");
+        // no user
+        GitSCPUrl url = GitSCPUrl.parse("github.com:project-ncl/pnc.git#abc123");
+        assertThat(url.getUser()).isNull();
+        assertThat(url.getHostWithPath()).isEqualTo("github.com/project-ncl/pnc.git");
+        assertThat(url.getFragment()).isEqualTo("abc123");
+    }
+
+    @Test
+    public void shouldTreatEverythingAfterTheFirstHashAsFragment() throws Exception {
+        // '#' starts the fragment, so this is the repository 'project-ncl' at ref 'x/pnc.git', not a path
+        GitSCPUrl url = GitSCPUrl.parse("git@github.com:project-ncl#x/pnc.git");
+        assertThat(url.getHostWithPath()).isEqualTo("github.com/project-ncl");
+        assertThat(url.getRepositoryName()).isEqualTo("project-ncl");
+        assertThat(url.getFragment()).isEqualTo("x/pnc.git");
+    }
+
+    @Test
+    public void shouldHaveNoFragmentWhenNotPresent() throws Exception {
+        assertThat(GitSCPUrl.parse("git@github.com:project-ncl/pnc.git").getFragment()).isNull();
+    }
+
+    @Test
+    public void shouldNotParseInvalidFragment() throws Exception {
+        // empty fragment, fragment with a space, a second '#', and a '#' in the middle of the path
+        assertThatThrownBy(() -> GitSCPUrl.parse("git@github.com:project-ncl/pnc.git#"))
+                .isInstanceOf(MalformedURLException.class);
+        assertThatThrownBy(() -> GitSCPUrl.parse("git@github.com:project-ncl/pnc.git#bad ref"))
+                .isInstanceOf(MalformedURLException.class);
+        assertThatThrownBy(() -> GitSCPUrl.parse("git@github.com:project-ncl/pnc.git#a#b"))
+                .isInstanceOf(MalformedURLException.class);
+        // a '#' in the host must not be accepted either
+        assertThatThrownBy(() -> GitSCPUrl.parse("git@evil.net#github.com:project-ncl/pnc.git"))
+                .isInstanceOf(MalformedURLException.class);
+    }
+
+    @Test
     public void shouldFailOnNull() throws Exception {
         assertThatThrownBy(() -> GitSCPUrl.parse(null)).isInstanceOf(IllegalArgumentException.class);
     }

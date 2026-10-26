@@ -64,6 +64,13 @@ public class UrlsTest {
         url = "git@github.com:project-ncl/subgroup/pnc.git";
         assertThat(Urls.keepHostAndPathOnly(url)).isEqualTo("github.com/project-ncl/subgroup/pnc.git");
 
+        // scp-like url with a '#ref' fragment: the fragment is dropped, like for scheme-based urls
+        url = "git@github.com:project-ncl/pnc.git#abc123";
+        assertThat(Urls.keepHostAndPathOnly(url)).isEqualTo("github.com/project-ncl/pnc.git");
+
+        url = "git+ssh://github.com/project-ncl/pnc.git#abc123";
+        assertThat(Urls.keepHostAndPathOnly(url)).isEqualTo("github.com/project-ncl/pnc.git");
+
         url = "project-ncl";
         assertThat(Urls.keepHostAndPathOnly(url)).isEqualTo("project-ncl");
 

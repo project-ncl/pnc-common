@@ -122,4 +122,17 @@ public class ScmUrlGeneratorProviderTest {
         internalUrl = "git@gerrit.com:workspace/project/repository.git";
         assertThat(ScmUrlGeneratorProvider.determineInternalScmProvider(internalUrl)).isEqualTo(GERRIT);
     }
+
+    @Test
+    public void testInternalScmProviderMethodWithScpFragment() throws Exception {
+        // scp-like urls with a '#ref' fragment are recognised as scp-like and classified by host
+        String internalUrl = "git@github.company.com:workspace/project/repository.git#abc123";
+        assertThat(ScmUrlGeneratorProvider.determineInternalScmProvider(internalUrl)).isEqualTo(GITHUB);
+
+        internalUrl = "git@gitlab.com:workspace/project/repository.git#abc123";
+        assertThat(ScmUrlGeneratorProvider.determineInternalScmProvider(internalUrl)).isEqualTo(GITLAB);
+
+        internalUrl = "git@gerrit.com:workspace/project/repository.git#abc123";
+        assertThat(ScmUrlGeneratorProvider.determineInternalScmProvider(internalUrl)).isEqualTo(GERRIT);
+    }
 }
