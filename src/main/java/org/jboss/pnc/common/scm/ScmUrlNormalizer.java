@@ -32,8 +32,10 @@ import org.jboss.pnc.common.Urls;
  * bare {@code host[:/]path} forms are delegated to {@link GitSCPUrl}.
  *
  * <p>
- * The result is lower-cased and carries no scheme, userinfo, port, {@code .git} suffix or trailing slash. For
- * example {@code https://git@gitlab.example.com:8080/lw/lw-builds/foo.git} and
+ * The result is lower-cased and carries no scheme, userinfo, port, {@code .git} suffix, trailing slash or
+ * {@code #ref} fragment. A fragment is a git revision selector, not part of the repository identity this class
+ * compares, so it is dropped (and dropping it up front also lets {@link GitSCPUrl} parse scp-like URLs that carry
+ * one). For example {@code https://git@gitlab.example.com:8080/lw/lw-builds/foo.git#tag} and
  * {@code git@gitlab.example.com:lw/lw-builds/foo} both normalize to {@code gitlab.example.com/lw/lw-builds/foo}.
  */
 public class ScmUrlNormalizer {
@@ -47,14 +49,16 @@ public class ScmUrlNormalizer {
      *
      * @param url the SCM URL in any supported form (https, git+ssh, ssh, git, scp-like, or bare host/path)
      * @return the normalized {@code host/path}, lower-cased and without scheme, userinfo, port, {@code .git}
-     *         suffix or trailing slash
+     *         suffix, trailing slash or {@code #ref} fragment
      */
     public static String normalize(String url) {
         if (url == null || url.isBlank()) {
             return "";
         }
 
-        String trimmed = url.trim();
+        // A '#ref' fragment is a git revision selector, not part of the host/path identity; drop it before parsing.
+        // This also keeps GitSCPUrl happy, whose scp pattern does not accept a fragment.
+        String trimmed = stripFragment(url.trim());
         String hostWithPath;
         if (trimmed.contains("://")) {
             // scheme-based URL: URI parsing drops the scheme, userinfo and port, leaving host + path
@@ -69,6 +73,11 @@ public class ScmUrlNormalizer {
         }
 
         return stripSuffixes(hostWithPath).toLowerCase();
+    }
+
+    private static String stripFragment(String url) {
+        int hash = url.indexOf('#');
+        return hash < 0 ? url : url.substring(0, hash);
     }
 
     private static String stripSuffixes(String value) {
