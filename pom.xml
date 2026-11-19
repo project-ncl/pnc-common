@@ -36,7 +36,7 @@
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.release>11</maven.compiler.release>
-    <version.org.jboss.pnc.otel>2.1.0</version.org.jboss.pnc.otel>
+    <version.org.jboss.pnc.otel>2.2.0</version.org.jboss.pnc.otel>
     <tagSuffix/>
     <jackson.version>2.23.0</jackson.version>
 
